@@ -163,8 +163,13 @@ public class myAudioRecorder extends Activity {
         isRecording = true ;
         while (isRecording) {
           int bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
+         
           for (int i = 0; i < bufferReadResult; i++)
-            dos.writeShort(buffer[i]);
+          {
+        	  Log.e("ysy", "buffer: " + buffer[i]);
+              dos.writeShort(buffer[i]);
+          }
+
         }
  
  

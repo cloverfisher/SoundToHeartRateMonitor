@@ -18,6 +18,18 @@
             android:layout_height="wrap_content"
             android:text="RecordButton" />
 
+        <Button
+            android:id="@+id/btnreplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Replay" />
+
+        <TextView
+            android:id="@+id/beattext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="beat" />
+
     </LinearLayout>
 
 </LinearLayout>

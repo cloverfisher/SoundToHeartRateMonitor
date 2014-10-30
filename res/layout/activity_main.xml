@@ -9,7 +9,7 @@
     tools:context=".MainActivity" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/beattext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
@@ -18,8 +18,8 @@
         android:id="@+id/btnMainToRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
+        android:layout_alignLeft="@+id/beattext"
+        android:layout_below="@+id/beattext"
         android:layout_marginTop="51dp"
         android:text="RecordDisplay" />
 

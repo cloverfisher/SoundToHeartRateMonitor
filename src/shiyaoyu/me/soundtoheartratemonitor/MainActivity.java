@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this,myAudioRecorder.class);
+				Intent intent = new Intent(MainActivity.this,RecordDisplayActivity.class);
 				startActivity(intent );
 			}
 		});
