@@ -33,13 +33,10 @@ import android.widget.TextView;
 public class RecordDisplayActivity extends Activity{
 
 	private int bufferSizeInByte = 8; //buffersize
-	private  String AudioNamme = "";
-	private String NewAudioName = "";
 	
 	
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
-	private static String mFileName = null;
 	
 	//private RecordButton  mRecordButton = null;
 	Button recordButton = null;
@@ -53,8 +50,8 @@ public class RecordDisplayActivity extends Activity{
 	int threshold = 3000;
 	boolean thresholdflag = false;
     File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FHR.pcm");
-	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
-	int BytesPerElement = 2; // 2 bytes in 16bit format
+//	int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
+//	int BytesPerElement = 2; // 2 bytes in 16bit format
 	
 	TextView beatsTextView = null;
 	long endTime = System.currentTimeMillis();
@@ -92,7 +89,6 @@ public class RecordDisplayActivity extends Activity{
 		bufferSizeInByte = AudioRecord.getMinBufferSize( SAMPLE_RATE_IN_HZ,  
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);  
 		Log.e(LOG_TAG, "buffersize " + bufferSizeInByte);
-		//audioRecord = new AudioRecord(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes)
 		audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_IN_HZ,  
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSizeInByte);  
 	}
@@ -129,7 +125,6 @@ public class RecordDisplayActivity extends Activity{
 				{
 					long time=0;
 					readsize = audioRecord.read(audiodata, 0, bufferSizeInByte);
-				//	Log.e(LOG_TAG, "readsize " +readsize );
 					for(int i =0; i<readsize; i++)
 					{
 						Log.e(LOG_TAG, "audiodata " +audiodata[i] );
@@ -154,24 +149,12 @@ public class RecordDisplayActivity extends Activity{
 						else if (audiodata[i]<threshold) {
 							thresholdflag = false;
 						}
-						
-						try {
-							dos.writeShort(audiodata[i]);
-						
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						dos.writeShort(audiodata[i]);
 					}
 				}
-				try {
-					dos.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				dos.close();
 				audioRecord.stop();
-			} catch (FileNotFoundException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -195,47 +178,16 @@ public class RecordDisplayActivity extends Activity{
 	        }
 		recordThread = new RecordThread();
 		recordThread.start();
-		/*
-		mRecorder = new MediaRecorder();
-		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-		mRecorder.setOutputFile(mFileName);
-		
-		try {
-			mRecorder.prepare();
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "prepare fail");
-			// TODO: handle exception
-		}
-		*/
-		
-//		int readsize = 0;
-//		
-//		byte[] audiodata = new byte[bufferSizeInByte];
-//		while(isRecord == true)
-//		{
-//			readsize = audioRecord.read(audiodata, 0, bufferSizeInByte);
-//			Log.e(LOG_TAG, "readsize " +audiodata );
-//		}
 	}
 	
 	private void stopRecording(){
-		isRecord = false;
-		
-//		mRecorder.stop();
-//		mRecorder.release();
-//		mRecorder = null;
-	}
+		isRecord = false;	
+		}
 	
-	
-
-	
-    public void AudioRecordTest() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
-    }
-	
+    /*
+     * Handler ,send the message from record thread to the main thread
+     * */
+    
     private Handler beatsHandler = new Handler(){
 
 		@Override
@@ -246,13 +198,16 @@ public class RecordDisplayActivity extends Activity{
 			case 1:
 				beatsTextView.setText("" + beats);
 				break;
-
 			default:
 				break;
 			}
 		}
     	
     };
+    
+    /*
+     * replay the record
+     * */
     
     public void play() {
         // Get the file we want to playback.
@@ -284,7 +239,7 @@ public class RecordDisplayActivity extends Activity{
           // Create a new AudioTrack object using the same parameters as the AudioRecord
           // object used to create the file.
           AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-        		  SAMPLE_RATE_IN_HZ,
+        		  									SAMPLE_RATE_IN_HZ,
                                                  AudioFormat.CHANNEL_IN_MONO,
                                                  AudioFormat.ENCODING_PCM_16BIT,
                                                  musicLength*2,
@@ -303,6 +258,10 @@ public class RecordDisplayActivity extends Activity{
     	Log.e(LOG_TAG, "play end");
       }
 	
+    /*
+     * oncreate 
+     * */
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -342,10 +301,6 @@ public class RecordDisplayActivity extends Activity{
 				play();
 			}
 		});
-		
-	//	mRecordButton = (Button)findViewById(R.id.btnRecord);
-	//	int bufferSize;		
-		
 	}
 
 	
