@@ -32,7 +32,7 @@ public final class R {
         public static final int end_bt=0x7f080006;
         public static final int play_bt=0x7f080007;
         public static final int start_bt=0x7f080005;
-        public static final int videoView1=0x7f080002;
+        public static final int xyplot=0x7f080002;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
