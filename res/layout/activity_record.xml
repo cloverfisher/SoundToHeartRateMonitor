@@ -7,7 +7,7 @@
 	    android:id="@+id/xyplot"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_margin="10dp"
+	    android:layout_margin="5dp"
 	    android:layout_weight="1"
 	    title="test" />
 
@@ -23,10 +23,10 @@
             android:text="RecordButton" />
 
         <Button
-            android:id="@+id/btnreplay"
+            android:id="@+id/btnfullgraph"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Replay" />
+            android:text="fullgraph" />
 
         <TextView
             android:id="@+id/beattext"

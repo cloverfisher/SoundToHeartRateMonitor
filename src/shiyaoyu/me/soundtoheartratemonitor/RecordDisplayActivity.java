@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -36,6 +39,7 @@ import com.androidplot.Plot;
 import com.androidplot.util.Redrawer;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
@@ -49,9 +53,10 @@ public class RecordDisplayActivity extends Activity{
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
 	
-	private static final int HISTORY_SIZE= 50;
+	private static final int HISTORY_SIZE= 180;
 	
 	Button recordButton = null;
+	Button fullFHRButton = null;
 	private boolean recordFlag = true;
 	private MediaRecorder mRecorder = null;
 	
@@ -65,7 +70,6 @@ public class RecordDisplayActivity extends Activity{
     
     private XYPlot fhrPlot = null; 
     private SimpleXYSeries fhrSeries = null;
-    private SimpleXYSeries fullFHRSeries = null;
     Redrawer redrawer;
 
 	
@@ -73,7 +77,11 @@ public class RecordDisplayActivity extends Activity{
 	long endTime = System.currentTimeMillis();
 	long startTime = System.currentTimeMillis();
 	
-
+	//List timelist = new ArrayList<double>();
+	ArrayList timeList = new ArrayList<Double>();
+	ArrayList bpmList = new ArrayList<Integer>();
+	//double bpmarr[];
+	
 	class RecordButton extends Button{
 		boolean mStartRecording = true;
 		
@@ -112,6 +120,7 @@ public class RecordDisplayActivity extends Activity{
 	
 	private void onRecord(boolean start)
 	{		
+		Log.e("ysystart", "start?"+start);
 		if(start)
 			startRecording();
 		else
@@ -136,11 +145,12 @@ public class RecordDisplayActivity extends Activity{
 				os = new FileOutputStream(file);
 		        BufferedOutputStream bos = new BufferedOutputStream(os);
 		        DataOutputStream dos = new DataOutputStream(bos);
-
+				double time=0;
+				double timerecord = 0;
+				int bpm = 0;
 				while(isRecord == true)
 				{
-					double time=0;
-					double timerecord = 0;
+
 					readsize = audioRecord.read(audiodata, 0, bufferSizeInByte);
 					for(int i =0; i<readsize; i++)
 					{
@@ -150,28 +160,28 @@ public class RecordDisplayActivity extends Activity{
 							thresholdflag = true;
 							endTime = System.currentTimeMillis();
 							time = endTime - startTime;
-							if(time > timerecord + 150)
+							if(time > timerecord + 250)
 							{
+					        	Log.e(LOG_TAG, "time:" + time + "timerecord:" + timerecord);
+								bpm = (int) (60*1000/(time-timerecord));
 								timerecord = time;
 								beats++;							
 								Message msgMessage = new Message();
 								msgMessage.what = 1;
-								beatsHandler.sendMessage(msgMessage);				
+								beatsHandler.sendMessage(msgMessage);
+
+					        	Log.e(LOG_TAG, "bpm:" +bpm);
+					        	Log.e(LOG_TAG, "time:" + time/1000);
+					            timeList.add(time/1000);
+					            bpmList.add(bpm);
+					            
+					            fhrSeries.addLast(time/1000, bpm);	
 							}
-				            totalTimeInSec =  (time/1000d);
-				            double bps = 0;
-				            if(totalTimeInSec<0.5)
-				            	bps = 0;
-				            else
-				            	bps= (beats / totalTimeInSec);
-				            int bpm = (int) (bps * 60d);
-				        	Log.e(LOG_TAG, "bpm:" +bpm);
-				        	Log.e(LOG_TAG, "time:" + time);
-				        	Log.e(LOG_TAG, "time:" + time + "beats:" + beats);
+
 				            if(fhrSeries.size()>HISTORY_SIZE){
 				            	fhrSeries.removeFirst();				           
 				            }
-				            fhrSeries.addLast(time, bpm);	
+
 							//	beatsTextView.setText("" + beats);
 						}
 						else if (audiodata[i]<threshold) {
@@ -196,7 +206,7 @@ public class RecordDisplayActivity extends Activity{
 		int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 		startTime = System.currentTimeMillis();
 	    //forbid the system lock 
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); setContentView(R.layout.main);   
+	//	getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); setContentView(R.layout.activity_record);   
 	      // Delete any previous recording.
 	    if (file.exists())
 	       file.delete();
@@ -210,12 +220,17 @@ public class RecordDisplayActivity extends Activity{
 //	    df
 		recordThread = new RecordThread();
 		recordThread.start();
+	//	fhrSeries.
+		bpmList.clear();;
+		timeList.clear();
+		addNewPlot();
 		redrawer.start();
 	}
 	
 	private void stopRecording(){
 		isRecord = false;	
 		redrawer.finish();
+//		redrawer.pause();
 //		data.stopThread();
 		}
 	
@@ -257,7 +272,7 @@ public class RecordDisplayActivity extends Activity{
           // Create a DataInputStream to read the audio data back from the saved file.
           InputStream is = new FileInputStream(file);
           BufferedInputStream bis = new BufferedInputStream(is);
-          DataInputStream dis = new DataInputStream(bis);
+          DataInputStream dis = new DataInputStream(bis);  
            
           // Read the file into the music array.
           int i = 0;
@@ -314,9 +329,11 @@ public class RecordDisplayActivity extends Activity{
 				Log.e(LOG_TAG, "onclick");
 				if(recordFlag)
 				{
+					fullFHRButton.setEnabled(false);
 					recordButton.setText("Stop");
 				}				
 				else {
+					fullFHRButton.setEnabled(true);
 					recordButton.setText("Start");
 				}
 				onRecord(recordFlag);
@@ -325,13 +342,22 @@ public class RecordDisplayActivity extends Activity{
 				
 			}
 		});
-		Button replayButton = (Button)findViewById(R.id.btnreplay);
-		replayButton.setOnClickListener(new View.OnClickListener() {
+		fullFHRButton = (Button)findViewById(R.id.btnfullgraph);
+		fullFHRButton.setEnabled(false);
+		fullFHRButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 			//	play();
+				if(timeList.size()>4)
+				{					
+					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
+					intent.putExtra("time", timeList);
+					intent.putExtra("bpm", bpmList);
+					//intent.pute		
+					startActivity(intent);				
+				}
+
 			}
 		});
 		
@@ -339,34 +365,56 @@ public class RecordDisplayActivity extends Activity{
 		/*plot part*/
 		//TODO plot
 		fhrPlot = (XYPlot)findViewById(R.id.xyplot);		
-		fhrPlot.setDomainBoundaries(-1, 1, BoundaryMode.FIXED);
-		fhrPlot.getGraphWidget().getDomainLabelPaint().setColor(Color.TRANSPARENT);
-		
-		fhrSeries = new SimpleXYSeries("FHR");
-		
-		fhrSeries.useImplicitXVals();
-		fhrPlot.setRangeBoundaries(0,500,BoundaryMode.FIXED);
+	//	fhrPlot.setDomainBoundaries(-1, 1, BoundaryMode.FIXED);
+	//	fhrPlot.getGraphWidget().get`
+		fhrPlot.getGraphWidget().setMargins(5, 5, 5, 5);
+		fhrPlot.getGraphWidget().getBackgroundPaint().setColor(Color.WHITE);
+		fhrPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
+		fhrPlot.getGraphWidget().getDomainGridLinePaint().setColor(Color.RED);
+		fhrPlot.getGraphWidget().getRangeGridLinePaint().setColor(Color.RED);
+		fhrPlot.getGraphWidget().getRangeLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
+		fhrPlot.getGraphWidget().getRangeLabelPaint().setColor(Color.RED);
+	//	fhrPlot.getGraphWidget().getRangeLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
+	//	fhrPlot.getGraphWidget().getRangeLabelPaint().setColor(Color.RED);
+		//	fhrPlot.setBackgroundColor( Color.WHITE);
+
+		fhrPlot.setRangeBoundaries(0,240,BoundaryMode.FIXED);
 		fhrPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
-		
-		fhrPlot.addSeries(fhrSeries,
-	                new LineAndPointFormatter(
-	                        Color.rgb(100, 100, 200), null, null, null));
-		fhrPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-		fhrPlot.setDomainStepValue(HISTORY_SIZE/10);
+
+	//	fhrPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+		fhrPlot.setDomainStepValue(19);
+		fhrPlot.setRangeStepValue(25);
 		fhrPlot.setTicksPerRangeLabel(3);
+		fhrPlot.setTicksPerDomainLabel(6);
+		fhrPlot.getGraphWidget().getDomainSubGridLinePaint().setColor(Color.rgb(220,175 ,175));
+		fhrPlot.getGraphWidget().getRangeSubGridLinePaint().setColor(Color.rgb(220,175 , 175));
 		fhrPlot.setDomainLabel("time");
 		fhrPlot.getDomainLabelWidget().pack();
 		fhrPlot.setRangeLabel("bpm");
 	    fhrPlot.getRangeLabelWidget().pack();	
 	    
 	    fhrPlot.setRangeValueFormat(new DecimalFormat("#"));
-	    fhrPlot.setDomainValueFormat(new DecimalFormat("#"));
+//	    fhrPlot.setDomainValueFormat(new DecimalFormat("#.#"));
 	    
+	    
+	    addNewPlot();
+
+
+		
+	}
+	
+	private void addNewPlot()
+	{
+		fhrPlot.clear();
+		fhrSeries = new SimpleXYSeries("FHR");	
+		fhrSeries.useImplicitXVals();
+		LineAndPointFormatter series2Format = new LineAndPointFormatter();
+		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null, new PointLabelFormatter(Color.RED));
+	     
+		fhrPlot.addSeries(fhrSeries,				series2Format);  
 	    redrawer = new Redrawer(
                 Arrays.asList(new Plot[]{fhrPlot}),
                 100, false);
-
-		
 	}
 
 	
