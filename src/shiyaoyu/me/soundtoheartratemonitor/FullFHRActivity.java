@@ -57,7 +57,7 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
 		plotConfiguration();
 		fhrPlot.setOnTouchListener(this);
 		fhrPlot.addSeries(fullFHRSeries,  new LineAndPointFormatter(
-                Color.rgb(50, 50, 50), null, null, null));
+                Color.rgb(50, 50, 50), null, null,  new PointLabelFormatter(Color.RED)));
 		
 		fhrPlot.redraw();
 		fhrPlot.calculateMinMaxVals();
@@ -133,9 +133,7 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
         minXY.x = domainMidPoint - offset;
         maxXY.x = domainMidPoint + offset;
 
-//        minXY.x = Math.min(minXY.x, fullFHRSeries.getX(fullFHRSeries.size() - 3)
-//                .floatValue());
-//        maxXY.x = Math.max(maxXY.x, fullFHRSeries.getX(1).floatValue());
+
         clampToDomainBounds(domainSpan);
     }
     

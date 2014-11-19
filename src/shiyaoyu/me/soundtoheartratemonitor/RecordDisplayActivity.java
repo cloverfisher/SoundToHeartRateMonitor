@@ -351,6 +351,7 @@ public class RecordDisplayActivity extends Activity{
 			//	play();
 				if(timeList.size()>4)
 				{					
+				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
 					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
 					intent.putExtra("time", timeList);
 					intent.putExtra("bpm", bpmList);
@@ -409,7 +410,7 @@ public class RecordDisplayActivity extends Activity{
 		fhrSeries = new SimpleXYSeries("FHR");	
 		fhrSeries.useImplicitXVals();
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
-		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null, new PointLabelFormatter(Color.RED));
+		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
 	     
 		fhrPlot.addSeries(fhrSeries,				series2Format);  
 	    redrawer = new Redrawer(
