@@ -351,8 +351,8 @@ public class RecordDisplayActivity extends Activity{
 			//	play();
 				if(timeList.size()>4)
 				{					
-				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
-					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
+					Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
+				//	Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
 					intent.putExtra("time", timeList);
 					intent.putExtra("bpm", bpmList);
 					//intent.pute		

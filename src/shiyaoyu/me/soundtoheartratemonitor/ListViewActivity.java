@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ public class ListViewActivity extends Activity {
 		Intent intent = getIntent() ;
 		 timelist = intent.getParcelableArrayListExtra("time");
 		 bpmlist = intent.getParcelableArrayListExtra("bpm");
-		NUM_DURATION = NUM_DURATION/NUM_SERIES_PER_PLOT;
+		NUM_DURATION = ((Double)timelist.get(timelist.size()-1))/NUM_SERIES_PER_PLOT;
 		ListView plotListView = (ListView)findViewById(R.id.listviewplot);
 		
 		
@@ -84,28 +85,65 @@ public class ListViewActivity extends Activity {
 
 	            p.setTitle("plot" + position);
 
-	            ArrayList<Double> timearr = new ArrayList<Double>();
-	            ArrayList<Integer> bpmarr = new ArrayList<Integer>();
+//	            ArrayList<Double> timearr = new ArrayList<Double>();
+//	            ArrayList<Integer> bpmarr = new ArrayList<Integer>();
 	            
 //	            Vector<Double> v2 = new Vector<Double>();
 //	            XYSeries series2 = new SimpleXYSeries(v2, null, null);
 	            
-	            for (int k = 0; k < NUM_SERIES_PER_PLOT; k++) {
-		            for(int i = 0; i<timelist.size();i++ )
+	            ArrayList<Integer> tempList = new ArrayList<Integer>();
+	            tempList.add(0);
+		            for(int i = 0,k=0; i<timelist.size();i++ )
 		            {
 		            	double temptime = (Double)timelist.get(i);
-		            	if(temptime>NUM_DURATION*k && temptime<=NUM_DURATION*(k+1))
+		            	if((temptime>=NUM_DURATION*k) && (temptime<=NUM_DURATION*(k+1)))
 		            	{
-		                	timearr.add(temptime);
-		                	bpmarr.add((Integer)bpmlist.get(i));
+//		                	timearr.add(temptime);
+//		                	bpmarr.add((Integer)bpmlist.get(i));
 		            	}
+		            	else {
+							k++;
+							tempList.add(i);
+						}
 		
 		            }
-	            	
-	                XYSeries series = new SimpleXYSeries(timearr, bpmarr, "S" + k);
+		        tempList.add(timelist.size()-1);
+		        Log.e("TAG", "NUM_DURATION:" + NUM_DURATION);
+		        Log.e("TAG", "k:" + tempList.size());
+		        XYSeries[] series2 ;
+		        series2 = new SimpleXYSeries[NUM_SERIES_PER_PLOT];
+		        for(int k =0; k < NUM_SERIES_PER_PLOT; k++)
+		        {
+		        	Log.e("ysy", "time" + timelist.get(tempList.get(k)) + "~" + timelist.get(tempList.get(k+1)));
+		        	series2[k] = new SimpleXYSeries(timelist.subList(tempList.get(k), tempList.get(k+1)), bpmlist.subList(tempList.get(k), tempList.get(k+1)), "S" + k);
+	           //     XYSeries series = new SimpleXYSeries(timelist.subList(tempList.get(k), tempList.get(k+1)), bpmlist.subList(tempList.get(k), tempList.get(k+1)), "S" + k);
+	            //    p.addSeries(series, new LineAndPointFormatter(Color.BLUE,null, null, null));  
+		        	 p.addSeries(series2[k], new LineAndPointFormatter(Color.BLUE,null, null, null));  
+		        }
+
+		        /*
+	            for (int k = 0; k < NUM_SERIES_PER_PLOT; k++) {
+	                ArrayList<Number> nums = new ArrayList<Number>();
+	                for (int j = 0; j < NUM_POINTS_PER_SERIES; j++) {
+	                    nums.add(generator.nextFloat());
+	                }
+
+	                double rl = Math.random();
+	                double gl = Math.random();
+	                double bl = Math.random();
+
+	                double rp = Math.random();
+	                double gp = Math.random();
+	                double bp = Math.random();
+
+	                XYSeries series = new SimpleXYSeries(nums, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "S" + k);
 	                p.addSeries(series, new LineAndPointFormatter(
-	                        Color.BLUE,null, null, null));
+	                        Color.rgb(new Double(rl * 255).intValue(), new Double(gl * 255).intValue(), new Double(bl * 255).intValue()),
+	                        Color.rgb(new Double(rp * 255).intValue(), new Double(gp * 255).intValue(), new Double(bp * 255).intValue()),
+	                        null, null));
 	            }
+	            */
+	            
 	            p.redraw();
 	            return v;
 		}
