@@ -23,6 +23,8 @@ import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 
+import function.PlotConfigure;
+
 public class FullFHRActivity extends Activity implements OnTouchListener{
 
 	 private XYPlot fhrPlot = null; 
@@ -30,7 +32,7 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
 	 Redrawer redrawer;
 	 private PointF minXY;
 	 private PointF maxXY;
-	 static final int HISTORY_SIZE = 120;
+	 static final int HISTORY_SIZE = 60;
 	 static final String LOG_E = "ysy_full_fhr";
 	
 	@Override
@@ -54,7 +56,8 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
 		Log.e("LOG_E", "time size:"+ timelist.size());
 		/*plot part*/
 		//TODO plot
-		plotConfiguration();
+		fhrPlot = (XYPlot)findViewById(R.id.fullplot);	
+		PlotConfigure.plotConfiguration(fhrPlot, HISTORY_SIZE);
 		fhrPlot.setOnTouchListener(this);
 		fhrPlot.addSeries(fullFHRSeries,  new LineAndPointFormatter(
                 Color.rgb(50, 50, 50), null, null,  new PointLabelFormatter(Color.RED)));
@@ -182,41 +185,6 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
  
 
     
-    private void plotConfiguration()
-    {
-    	fhrPlot = (XYPlot)findViewById(R.id.fullplot);		
-    	//	fhrPlot.setDomainBoundaries(-1, 1, BoundaryMode.FIXED);
-    	//	fhrPlot.getGraphWidget().get`
-    	fhrPlot.getGraphWidget().setMargins(20, 20, 20, 20);
-    		fhrPlot.getGraphWidget().getBackgroundPaint().setColor(Color.WHITE);
-    		fhrPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
-    		fhrPlot.getGraphWidget().getDomainGridLinePaint().setColor(Color.RED);
-    		fhrPlot.getGraphWidget().getRangeGridLinePaint().setColor(Color.RED);
-    		fhrPlot.getGraphWidget().getRangeLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
-    		fhrPlot.getGraphWidget().getRangeLabelPaint().setColor(Color.RED);
-    		fhrPlot.getGraphWidget().getDomainLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
-    		fhrPlot.getGraphWidget().getDomainLabelPaint().setColor(Color.RED);
-    		//	fhrPlot.setBackgroundColor( Color.WHITE);
 
-    		fhrPlot.setRangeBoundaries(0,240,BoundaryMode.FIXED);
-    		fhrPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
-
-    	//	fhrPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-    		fhrPlot.setDomainStepValue(19);//domainbound / (steplong/tick) + 1
-    		fhrPlot.setTicksPerDomainLabel(6);
-    		fhrPlot.setRangeStepValue(25);
-    		fhrPlot.setTicksPerRangeLabel(3);
-
-    		fhrPlot.getGraphWidget().getDomainSubGridLinePaint().setColor(Color.rgb(220,175 ,175));
-    		fhrPlot.getGraphWidget().getRangeSubGridLinePaint().setColor(Color.rgb(220,175 , 175));
-    	//	fhrPlot.getGraphWidget().getDomainLabelPaint().
-    		fhrPlot.setDomainLabel("time");
-    		fhrPlot.getDomainLabelWidget().pack();
-    		fhrPlot.setRangeLabel("bpm");
-    	    fhrPlot.getRangeLabelWidget().pack();	
-    	    
-    	    fhrPlot.setRangeValueFormat(new DecimalFormat("#"));
-//    	    fhrPlot.setDomainValueFormat(new DecimalFormat("#.#"));
-    }
 	
 }

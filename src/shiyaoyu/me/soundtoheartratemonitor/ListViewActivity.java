@@ -31,7 +31,7 @@ public class ListViewActivity extends Activity {
     
     double NUM_DURATION = 60; //every graph view 60s;
     private ListView plotListView;
-    
+    XYPlot p[]; 
     
 	ArrayList timelist;
 	ArrayList bpmlist;
@@ -41,7 +41,7 @@ public class ListViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_listview);
-		
+		p = new XYPlot[NUM_SERIES_PER_PLOT];
 		Intent intent = getIntent() ;
 		 timelist = intent.getParcelableArrayListExtra("time");
 		 bpmlist = intent.getParcelableArrayListExtra("bpm");
@@ -76,83 +76,40 @@ public class ListViewActivity extends Activity {
 	                v = inf.inflate(R.layout.listview_item, parent, false);
 	            }
 
-	            XYPlot p = (XYPlot) v.findViewById(R.id.listplotitem);
+	             p[position]= (XYPlot) v.findViewById(R.id.listplotitem);
 	           
 	        //    p.setMargins(20, 20, 20, 20);
 	    	//	p.getBackgroundPaint().setColor(Color.WHITE);
 
 	            Random generator = new Random();
 
-	            p.setTitle("plot" + position);
+	            p[position].setTitle("plot" + position);
 
-//	            ArrayList<Double> timearr = new ArrayList<Double>();
-//	            ArrayList<Integer> bpmarr = new ArrayList<Integer>();
+	            ArrayList<Double> timearr = new ArrayList<Double>();
+	            ArrayList<Integer> bpmarr = new ArrayList<Integer>();
 	            
 //	            Vector<Double> v2 = new Vector<Double>();
 //	            XYSeries series2 = new SimpleXYSeries(v2, null, null);
-	            
-	            ArrayList<Integer> tempList = new ArrayList<Integer>();
-	            tempList.add(0);
-		            for(int i = 0,k=0; i<timelist.size();i++ )
-		            {
-		            	double temptime = (Double)timelist.get(i);
-		            	if((temptime>=NUM_DURATION*k) && (temptime<=NUM_DURATION*(k+1)))
-		            	{
-//		                	timearr.add(temptime);
-//		                	bpmarr.add((Integer)bpmlist.get(i));
-		            	}
-		            	else {
-							k++;
-							tempList.add(i);
-						}
-		
-		            }
-		        tempList.add(timelist.size()-1);
-		        Log.e("TAG", "NUM_DURATION:" + NUM_DURATION);
-		        Log.e("TAG", "k:" + tempList.size());
-		        XYSeries[] series2 ;
-		        series2 = new SimpleXYSeries[NUM_SERIES_PER_PLOT];
-		        for(int k =0; k < NUM_SERIES_PER_PLOT; k++)
+
+
+		        for(int i = 0; i<timelist.size();i++ )
 		        {
-		        	Log.e("ysy", "time" + timelist.get(tempList.get(k)) + "~" + timelist.get(tempList.get(k+1)));
-		        	series2[k] = new SimpleXYSeries(timelist.subList(tempList.get(k), tempList.get(k+1)), bpmlist.subList(tempList.get(k), tempList.get(k+1)), "S" + k);
-	           //     XYSeries series = new SimpleXYSeries(timelist.subList(tempList.get(k), tempList.get(k+1)), bpmlist.subList(tempList.get(k), tempList.get(k+1)), "S" + k);
-	            //    p.addSeries(series, new LineAndPointFormatter(Color.BLUE,null, null, null));  
-		        	 p.addSeries(series2[k], new LineAndPointFormatter(Color.BLUE,null, null, null));  
+		            double temptime = (Double)timelist.get(i);
+		            if((temptime>=NUM_DURATION*position) && (temptime<=NUM_DURATION*(position+1)))
+		            {
+		                	timearr.add(temptime);
+		                	bpmarr.add((Integer)bpmlist.get(i));
+		            }
 		        }
 
-		        /*
-	            for (int k = 0; k < NUM_SERIES_PER_PLOT; k++) {
-	                ArrayList<Number> nums = new ArrayList<Number>();
-	                for (int j = 0; j < NUM_POINTS_PER_SERIES; j++) {
-	                    nums.add(generator.nextFloat());
-	                }
+		        Log.e("TAG", "NUM_DURATION:" + NUM_DURATION);
+		        Log.e("ysy", "time" + position + ":" + timearr);
+		        XYSeries series2 = new SimpleXYSeries(timearr,bpmarr,"S"+ position);
 
-	                double rl = Math.random();
-	                double gl = Math.random();
-	                double bl = Math.random();
-
-	                double rp = Math.random();
-	                double gp = Math.random();
-	                double bp = Math.random();
-
-	                XYSeries series = new SimpleXYSeries(nums, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "S" + k);
-	                p.addSeries(series, new LineAndPointFormatter(
-	                        Color.rgb(new Double(rl * 255).intValue(), new Double(gl * 255).intValue(), new Double(bl * 255).intValue()),
-	                        Color.rgb(new Double(rp * 255).intValue(), new Double(gp * 255).intValue(), new Double(bp * 255).intValue()),
-	                        null, null));
-	            }
-	            */
-	            
-	            p.redraw();
+		        p[position].addSeries(series2, new LineAndPointFormatter(Color.BLUE,null, null, null)); 
+		        if(position==2)
+	            p[position].redraw();
 	            return v;
-		}
-		
-		
-		
-	}
-
-	
-	
-	
+		}	
+	}	
 }

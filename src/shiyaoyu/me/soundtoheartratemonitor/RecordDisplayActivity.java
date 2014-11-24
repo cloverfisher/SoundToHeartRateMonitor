@@ -44,6 +44,8 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 
+import function.PlotConfigure;
+
 public class RecordDisplayActivity extends Activity{
 
 	private int bufferSizeInByte = 8; //buffersize
@@ -53,10 +55,11 @@ public class RecordDisplayActivity extends Activity{
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
 	
-	private static final int HISTORY_SIZE= 180;
+	private static final int HISTORY_SIZE= 60;
 	
 	Button recordButton = null;
 	Button fullFHRButton = null;
+	Button listFHRButton = null;
 	private boolean recordFlag = true;
 	private MediaRecorder mRecorder = null;
 	
@@ -215,12 +218,9 @@ public class RecordDisplayActivity extends Activity{
 	    catch (IOException e) {
 	       throw new IllegalStateException("Failed to create " + file.toString());
 	        }
-//	    mythread = new Thread(data);
-//	    mythread.start();
-//	    df
+
 		recordThread = new RecordThread();
 		recordThread.start();
-	//	fhrSeries.
 		bpmList.clear();;
 		timeList.clear();
 		addNewPlot();
@@ -230,8 +230,7 @@ public class RecordDisplayActivity extends Activity{
 	private void stopRecording(){
 		isRecord = false;	
 		redrawer.finish();
-//		redrawer.pause();
-//		data.stopThread();
+		//Log.e(LOG_TAG, "x:"+ fhrSeries.ge)
 		}
 	
     /*
@@ -337,9 +336,7 @@ public class RecordDisplayActivity extends Activity{
 					recordButton.setText("Start");
 				}
 				onRecord(recordFlag);
-				recordFlag = !recordFlag;
-				
-				
+				recordFlag = !recordFlag;			
 			}
 		});
 		fullFHRButton = (Button)findViewById(R.id.btnfullgraph);
@@ -351,8 +348,8 @@ public class RecordDisplayActivity extends Activity{
 			//	play();
 				if(timeList.size()>4)
 				{					
-					Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
-				//	Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
+				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
+					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
 					intent.putExtra("time", timeList);
 					intent.putExtra("bpm", bpmList);
 					//intent.pute		
@@ -365,54 +362,21 @@ public class RecordDisplayActivity extends Activity{
 		
 		/*plot part*/
 		//TODO plot
-		fhrPlot = (XYPlot)findViewById(R.id.xyplot);		
-	//	fhrPlot.setDomainBoundaries(-1, 1, BoundaryMode.FIXED);
-	//	fhrPlot.getGraphWidget().get`
-		fhrPlot.getGraphWidget().setMargins(5, 5, 5, 5);
-		fhrPlot.getGraphWidget().getBackgroundPaint().setColor(Color.WHITE);
-		fhrPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
-		fhrPlot.getGraphWidget().getDomainGridLinePaint().setColor(Color.RED);
-		fhrPlot.getGraphWidget().getRangeGridLinePaint().setColor(Color.RED);
-		fhrPlot.getGraphWidget().getRangeLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
-		fhrPlot.getGraphWidget().getRangeLabelPaint().setColor(Color.RED);
-	//	fhrPlot.getGraphWidget().getRangeLabelPaint().setTextSize(20);//.setColor(Color.TRANSPARENT);
-	//	fhrPlot.getGraphWidget().getRangeLabelPaint().setColor(Color.RED);
-		//	fhrPlot.setBackgroundColor( Color.WHITE);
-
-		fhrPlot.setRangeBoundaries(0,240,BoundaryMode.FIXED);
-		fhrPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
-
-	//	fhrPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-		fhrPlot.setDomainStepValue(19);
-		fhrPlot.setRangeStepValue(25);
-		fhrPlot.setTicksPerRangeLabel(3);
-		fhrPlot.setTicksPerDomainLabel(6);
-		fhrPlot.getGraphWidget().getDomainSubGridLinePaint().setColor(Color.rgb(220,175 ,175));
-		fhrPlot.getGraphWidget().getRangeSubGridLinePaint().setColor(Color.rgb(220,175 , 175));
-		fhrPlot.setDomainLabel("time");
-		fhrPlot.getDomainLabelWidget().pack();
-		fhrPlot.setRangeLabel("bpm");
-	    fhrPlot.getRangeLabelWidget().pack();	
-	    
-	    fhrPlot.setRangeValueFormat(new DecimalFormat("#"));
-//	    fhrPlot.setDomainValueFormat(new DecimalFormat("#.#"));
-	    
-	    
-	    addNewPlot();
-
-
-		
+		fhrPlot = (XYPlot)findViewById(R.id.xyplot);
+		PlotConfigure.plotConfiguration(fhrPlot, HISTORY_SIZE);
+	    addNewPlot();		
 	}
-	
+
 	private void addNewPlot()
 	{
 		fhrPlot.clear();
 		fhrSeries = new SimpleXYSeries("FHR");	
-		fhrSeries.useImplicitXVals();
+	//	fhrSeries.set
+	//	fhrSeries.useImplicitXVals();
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
 		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
 	     
-		fhrPlot.addSeries(fhrSeries,				series2Format);  
+		fhrPlot.addSeries(fhrSeries,series2Format);  
 	    redrawer = new Redrawer(
                 Arrays.asList(new Plot[]{fhrPlot}),
                 100, false);
