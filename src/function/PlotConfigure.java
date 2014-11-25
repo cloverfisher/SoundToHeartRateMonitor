@@ -23,8 +23,8 @@ public class PlotConfigure {
 		fhrPlot.getGraphWidget().getDomainLabelPaint().setTextSize(20);
 		fhrPlot.getGraphWidget().getDomainLabelPaint().setColor(Color.RED);
 
-		fhrPlot.setRangeBoundaries(domainLeft,domainRight,BoundaryMode.FIXED);
-		fhrPlot.setDomainBoundaries(0, domainsize, BoundaryMode.FIXED);	
+		fhrPlot.setRangeBoundaries(0,240,BoundaryMode.FIXED);
+		fhrPlot.setDomainBoundaries(domainLeft, domainRight, BoundaryMode.FIXED);	
 		fhrPlot.setDomainStepValue(domainsize/10+1);
 		fhrPlot.setRangeStepValue(25);
 		fhrPlot.setTicksPerRangeLabel(3);

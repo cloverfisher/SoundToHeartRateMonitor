@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -27,11 +28,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.androidplot.Plot;
@@ -43,7 +48,13 @@ import com.androidplot.xy.XYPlot;
 import function.PlotConfigure;
 
 public class RecordDisplayActivity extends Activity{
-
+	//size can be used to get the screen size.
+	int width;
+	int height;
+	int offset = 0;
+	int scroll_width;
+	double rate;
+	ScrollView sv;
 	private int bufferSizeInByte = 8; //buffersize
 	
 	double time=0;
@@ -71,13 +82,14 @@ public class RecordDisplayActivity extends Activity{
     private XYPlot fhrPlot = null; 
     private SimpleXYSeries fhrSeries = null;
     Redrawer redrawer;
+    
+    LinearLayout scrollLayout;
 
 	
 	TextView beatsTextView = null;
 	long endTime = System.currentTimeMillis();
 	long startTime = System.currentTimeMillis();
 	
-	//List timelist = new ArrayList<double>();
 	ArrayList timeList = new ArrayList<Double>();
 	ArrayList bpmList = new ArrayList<Integer>();
 	//double bpmarr[];
@@ -175,13 +187,20 @@ public class RecordDisplayActivity extends Activity{
 					        	Log.e(LOG_TAG, "time:" + time/1000);
 					            timeList.add(time/1000);
 					            bpmList.add(bpm);
-					            
 					            fhrSeries.addLast(time/1000, bpm);	
+					            offset=(int)(rate*time/1000-offset);
+					            fhrPlot.scrollBy(offset, 0);
 							}
 							//if score !!
-//				            if(fhrSeries.getX(fhrSeries.size()-1).intValue()>HISTORY_SIZE){
-//				            	fhrSeries.removeFirst();				           
+//							double k = fhrSeries.getX(fhrSeries.size()-1).intValue()*rate-width-offset;
+//				            if(k>0){
+//				            	sv.scrollBy((int) (k+10), 0);	
+//				            
+//				            	offset+=(k+10);
+//				            	fhrPlot.scrollBy(offset, 0);
 //				            }
+							
+							
 						}
 						else if (audiodata[i]<threshold) {
 							thresholdflag = false;
@@ -312,15 +331,20 @@ public class RecordDisplayActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+	 	   width = getWindowManager().getDefaultDisplay().getWidth();
+	 	   height = getWindowManager().getDefaultDisplay().getHeight();
+	 	   offset = 0;	
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 
-
+		
 		
 		setContentView(R.layout.activity_record);	
+		sv = (ScrollView)findViewById(R.id.scrollView1);
+
+		
 		beatsTextView = (TextView)findViewById(R.id.beattext);
 		beatsTextView.setText(""+ beats);
 		recordButton = (Button)findViewById(R.id.btnRecord);
-		//recordButton.setText("Start");
+		recordButton.setText("Start");
 		recordButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -357,11 +381,16 @@ public class RecordDisplayActivity extends Activity{
 
 			}
 		});
-		
+		scrollLayout = (LinearLayout)findViewById(R.id.scrolllayout);
 		
 		/*plot part*/
 		fhrPlot = (XYPlot)findViewById(R.id.xyplot);
-		PlotConfigure.plotConfiguration(fhrPlot, 0,60);
+		scroll_width = scrollLayout.getWidth();
+		rate = scroll_width/HISTORY_SIZE;
+		Log.e(LOG_TAG, "plotwidth:"+scroll_width+" rate "+ rate);
+		PlotConfigure.plotConfiguration(fhrPlot, 0,0+HISTORY_SIZE);
+		
+		fhrPlot.scrollBy(-width+100, 0);
 	    addNewPlot();		
 	}
 	
@@ -371,14 +400,17 @@ public class RecordDisplayActivity extends Activity{
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
-
+ 	   width = getWindowManager().getDefaultDisplay().getWidth();
+ 	   height = getWindowManager().getDefaultDisplay().getHeight();
+ 	   offset = 0;
+ 	   Log.e(LOG_TAG, "width=" + width + " height=" + height);
 	      if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
 	           // Nothing need to be done here
-	            
+
+	    	   
 	        } else {
 	           // Nothing need to be done here
 	        }
-		
 	}
 
 	private void addNewPlot()
