@@ -46,18 +46,11 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
 		ArrayList timelist = intent.getParcelableArrayListExtra("time");
 		ArrayList bpmlist = intent.getParcelableArrayListExtra("bpm");
 		fullFHRSeries = new SimpleXYSeries(timelist,bpmlist,"fhr");
-
-
-//		for(int i = 0; i < timelist.size();i++)
-//		{
-//			Log.e("ysy", "bpm:" + bpmlist.get(i));
-//			fullFHRSeries.addLast((Double)timelist.get(i), (Double)bpmlist.get(i));
-//		}
 		Log.e("LOG_E", "time size:"+ timelist.size());
 		/*plot part*/
 		//TODO plot
 		fhrPlot = (XYPlot)findViewById(R.id.fullplot);	
-		PlotConfigure.plotConfiguration(fhrPlot, HISTORY_SIZE);
+		PlotConfigure.plotConfiguration(fhrPlot, 0,HISTORY_SIZE);
 		fhrPlot.setOnTouchListener(this);
 		fhrPlot.addSeries(fullFHRSeries,  new LineAndPointFormatter(
                 Color.rgb(50, 50, 50), null, null,  new PointLabelFormatter(Color.RED)));
@@ -67,10 +60,6 @@ public class FullFHRActivity extends Activity implements OnTouchListener{
 	    minXY=new PointF(fhrPlot.getCalculatedMinX().floatValue(),fhrPlot.getCalculatedMinY().floatValue());
 	    maxXY=new PointF(fhrPlot.getCalculatedMaxX().floatValue(),fhrPlot.getCalculatedMaxY().floatValue());
 		
-//		
-//		fhrPlot.setRangeBoundaries(0,500,BoundaryMode.FIXED);
-//		fhrPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
-	//	fullFHRSeries = new SimpleXYSeries(timelist, bpmlist, "FHR");
 	
 	}
 	

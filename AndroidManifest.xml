@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="shiyaoyu.me.soundtoheartratemonitor.RecordDisplayActivity">
+            android:name="shiyaoyu.me.soundtoheartratemonitor.RecordDisplayActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             </activity>
         <activity
             android:name="shiyaoyu.me.soundtoheartratemonitor.myAudioRecorder">

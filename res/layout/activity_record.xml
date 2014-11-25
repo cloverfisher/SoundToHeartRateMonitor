@@ -3,37 +3,63 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-	<com.androidplot.xy.XYPlot
-	    android:id="@+id/xyplot"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_margin="5dp"
-	    android:layout_weight="1"
-	    title="test" />
-
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-        android:layout_weight="5">
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
 
-        <Button
-            android:id="@+id/btnRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RecordButton" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btnfullgraph"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="fullgraph" />
+              <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5" >
 
-        <TextView
-            android:id="@+id/beattext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="beat" />
+                <Button
+                    android:id="@+id/btnRecord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RecordButton" />
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btnfullgraph"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="fullgraph" />
+
+                <TextView
+                    android:id="@+id/beattext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="beat" />
+            </LinearLayout>          
+            
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <com.androidplot.xy.XYPlot
+                        android:id="@+id/xyplot"
+                        android:layout_width="600dp"
+                        android:layout_height="300dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

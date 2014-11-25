@@ -10,8 +10,9 @@ import com.androidplot.xy.XYPlot;
 public class PlotConfigure {
 
 	
-	public static void plotConfiguration(XYPlot fhrPlot,int domainsize)
+	public static void plotConfiguration(XYPlot fhrPlot,int domainLeft,int domainRight)
 	{
+		int domainsize = domainRight - domainLeft;
 		fhrPlot.getGraphWidget().setMargins(10, 10, 10, 10);
 		fhrPlot.getGraphWidget().getBackgroundPaint().setColor(Color.WHITE);
 		fhrPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
@@ -22,10 +23,10 @@ public class PlotConfigure {
 		fhrPlot.getGraphWidget().getDomainLabelPaint().setTextSize(20);
 		fhrPlot.getGraphWidget().getDomainLabelPaint().setColor(Color.RED);
 
-		fhrPlot.setRangeBoundaries(30,240,BoundaryMode.FIXED);
+		fhrPlot.setRangeBoundaries(domainLeft,domainRight,BoundaryMode.FIXED);
 		fhrPlot.setDomainBoundaries(0, domainsize, BoundaryMode.FIXED);	
 		fhrPlot.setDomainStepValue(domainsize/10+1);
-		fhrPlot.setRangeStepValue(22);
+		fhrPlot.setRangeStepValue(25);
 		fhrPlot.setTicksPerRangeLabel(3);
 		fhrPlot.setTicksPerDomainLabel(6);
 		fhrPlot.getGraphWidget().getDomainSubGridLinePaint().setColor(Color.rgb(220,175 ,175));

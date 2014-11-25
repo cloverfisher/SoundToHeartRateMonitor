@@ -10,14 +10,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -37,12 +36,9 @@ import android.widget.TextView;
 
 import com.androidplot.Plot;
 import com.androidplot.util.Redrawer;
-import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
 
 import function.PlotConfigure;
 
@@ -65,6 +61,7 @@ public class RecordDisplayActivity extends Activity{
 	
 	private AudioRecord audioRecord;
 	private boolean isRecord = true;
+	boolean mStartRecording = true;
 	private RecordThread recordThread = null;
 	int beats = 0;
 	int threshold = 3000;
@@ -85,8 +82,10 @@ public class RecordDisplayActivity extends Activity{
 	ArrayList bpmList = new ArrayList<Integer>();
 	//double bpmarr[];
 	
+
+	
 	class RecordButton extends Button{
-		boolean mStartRecording = true;
+
 		
 		OnClickListener clicker = new OnClickListener() {
 			
@@ -153,7 +152,6 @@ public class RecordDisplayActivity extends Activity{
 				int bpm = 0;
 				while(isRecord == true)
 				{
-
 					readsize = audioRecord.read(audiodata, 0, bufferSizeInByte);
 					for(int i =0; i<readsize; i++)
 					{
@@ -180,12 +178,10 @@ public class RecordDisplayActivity extends Activity{
 					            
 					            fhrSeries.addLast(time/1000, bpm);	
 							}
-
-				            if(fhrSeries.size()>HISTORY_SIZE){
-				            	fhrSeries.removeFirst();				           
-				            }
-
-							//	beatsTextView.setText("" + beats);
+							//if score !!
+//				            if(fhrSeries.getX(fhrSeries.size()-1).intValue()>HISTORY_SIZE){
+//				            	fhrSeries.removeFirst();				           
+//				            }
 						}
 						else if (audiodata[i]<threshold) {
 							thresholdflag = false;
@@ -205,6 +201,7 @@ public class RecordDisplayActivity extends Activity{
 		
 	}
 	private void startRecording(){
+		creatAudioRecord();
 		isRecord = true;
 		int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 		startTime = System.currentTimeMillis();
@@ -315,12 +312,15 @@ public class RecordDisplayActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 
+
+		
 		setContentView(R.layout.activity_record);	
-		creatAudioRecord();
 		beatsTextView = (TextView)findViewById(R.id.beattext);
 		beatsTextView.setText(""+ beats);
 		recordButton = (Button)findViewById(R.id.btnRecord);
-		recordButton.setText("Start");
+		//recordButton.setText("Start");
 		recordButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -352,7 +352,6 @@ public class RecordDisplayActivity extends Activity{
 					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
 					intent.putExtra("time", timeList);
 					intent.putExtra("bpm", bpmList);
-					//intent.pute		
 					startActivity(intent);				
 				}
 
@@ -361,18 +360,31 @@ public class RecordDisplayActivity extends Activity{
 		
 		
 		/*plot part*/
-		//TODO plot
 		fhrPlot = (XYPlot)findViewById(R.id.xyplot);
-		PlotConfigure.plotConfiguration(fhrPlot, HISTORY_SIZE);
+		PlotConfigure.plotConfiguration(fhrPlot, 0,60);
 	    addNewPlot();		
+	}
+	
+	
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+
+	      if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+	           // Nothing need to be done here
+	            
+	        } else {
+	           // Nothing need to be done here
+	        }
+		
 	}
 
 	private void addNewPlot()
 	{
 		fhrPlot.clear();
 		fhrSeries = new SimpleXYSeries("FHR");	
-	//	fhrSeries.set
-	//	fhrSeries.useImplicitXVals();
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
 		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
 	     
