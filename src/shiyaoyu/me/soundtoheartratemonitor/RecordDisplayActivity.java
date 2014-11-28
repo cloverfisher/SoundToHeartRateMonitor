@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +16,10 @@ import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -28,9 +29,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -62,10 +61,10 @@ public class RecordDisplayActivity extends Activity{
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
 	
-	private static final int HISTORY_SIZE= 60;
+	private static final int HISTORY_SIZE= 2100;
 	
 	Button recordButton = null;
-	Button fullFHRButton = null;
+	Button exportButton = null;
 	Button listFHRButton = null;
 	private boolean recordFlag = true;
 	private MediaRecorder mRecorder = null;
@@ -352,31 +351,62 @@ public class RecordDisplayActivity extends Activity{
 				Log.e(LOG_TAG, "onclick");
 				if(recordFlag)
 				{
-					fullFHRButton.setEnabled(false);
+					exportButton.setEnabled(false);
 					recordButton.setText("Stop");
 				}				
 				else {
-					fullFHRButton.setEnabled(true);
+					exportButton.setEnabled(true);
 					recordButton.setText("Start");
 				}
 				onRecord(recordFlag);
 				recordFlag = !recordFlag;			
 			}
 		});
-		fullFHRButton = (Button)findViewById(R.id.btnfullgraph);
-		fullFHRButton.setEnabled(false);
-		fullFHRButton.setOnClickListener(new View.OnClickListener() {
+//		fullFHRButton = (Button)findViewById(R.id.btnfullgraph);
+//		fullFHRButton.setEnabled(false);
+//		fullFHRButton.setOnClickListener(new View.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//			//	play();
+//				if(timeList.size()>4)
+//				{					
+//				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
+//					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
+//					intent.putExtra("time", timeList);
+//					intent.putExtra("bpm", bpmList);
+//					startActivity(intent);				
+//				}
+//
+//			}
+//		});
+		
+		
+		exportButton = (Button)findViewById(R.id.btnexport);
+		exportButton.setEnabled(false);
+		exportButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 			//	play();
 				if(timeList.size()>4)
 				{					
-				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
-					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
-					intent.putExtra("time", timeList);
-					intent.putExtra("bpm", bpmList);
-					startActivity(intent);				
+					fhrPlot.setDrawingCacheEnabled(true);
+					int pwidth = fhrPlot.getWidth();
+					int pheight = fhrPlot.getHeight();
+					fhrPlot.measure(pwidth, pheight);
+					Bitmap bmp = Bitmap.createBitmap(fhrPlot.getDrawingCache());
+					fhrPlot.setDrawingCacheEnabled(false);
+			        FileOutputStream fos;
+					try {
+					//	File pbgfile = new File("fhrPhoto.png"); 
+						fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png", true);
+				        bmp.compress(CompressFormat.PNG, 100, fos);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
 
 			}
@@ -390,7 +420,7 @@ public class RecordDisplayActivity extends Activity{
 		Log.e(LOG_TAG, "plotwidth:"+scroll_width+" rate "+ rate);
 		PlotConfigure.plotConfiguration(fhrPlot, 0,0+HISTORY_SIZE);
 		
-		fhrPlot.scrollBy(-width+100, 0);
+//		fhrPlot.scrollBy(-width+100, 0);
 	    addNewPlot();		
 	}
 	

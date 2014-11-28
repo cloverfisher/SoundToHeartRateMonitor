@@ -26,10 +26,10 @@
                     android:text="RecordButton" />
 
                 <Button
-                    android:id="@+id/btnfullgraph"
+                    android:id="@+id/btnexport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="fullgraph" />
+                    android:text="export" />
 
                 <TextView
                     android:id="@+id/beattext"
@@ -45,15 +45,14 @@
                 android:layout_weight="1" >
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:id="@+id/scrolllayout"
+                    android:layout_width="3000dp"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:id="@+id/scrolllayout" 
-                     >
+                    android:orientation="horizontal" >
 
                     <com.androidplot.xy.XYPlot
                         android:id="@+id/xyplot"
-                        android:layout_width="600dp"
+                        android:layout_width="700dp"
                         android:layout_height="300dp"
                         android:layout_weight="1" />
 

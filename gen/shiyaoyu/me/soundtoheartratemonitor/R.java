@@ -28,7 +28,7 @@ public final class R {
         public static final int beattext=0x7f080002;
         public static final int btnMainToRecord=0x7f080003;
         public static final int btnRecord=0x7f080005;
-        public static final int btnfullgraph=0x7f080006;
+        public static final int btnexport=0x7f080006;
         public static final int end_bt=0x7f08000c;
         public static final int fullplot=0x7f080000;
         public static final int horizontalScrollView1=0x7f080007;
