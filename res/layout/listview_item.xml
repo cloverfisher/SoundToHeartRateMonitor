@@ -5,10 +5,26 @@
 
 
     
-        	<com.androidplot.xy.XYPlot
+
+
+        	<HorizontalScrollView
+        	    android:id="@+id/horizontalScrollView1"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:layout_weight="1" >
+
+        	    <LinearLayout
+        	        android:layout_width="match_parent"
+        	        android:layout_height="match_parent"
+        	        android:orientation="horizontal" >
+        	        
+        	   <com.androidplot.xy.XYPlot
 	    android:id="@+id/listplotitem"
-	    android:layout_width="fill_parent"
-	    android:layout_height="250dp"
+	    android:layout_width="700dp"
+	    android:layout_height="300dp"
 	   	android:layout_weight="1"
 	    title="test" />
+        	    </LinearLayout>
+        	</HorizontalScrollView>
+
 </LinearLayout>

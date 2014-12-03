@@ -23,4 +23,14 @@
         android:layout_marginTop="51dp"
         android:text="RecordDisplay" />
 
+    <Button
+        android:id="@+id/buttonListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnMainToRecord"
+        android:layout_alignBottom="@+id/btnMainToRecord"
+        android:layout_marginLeft="24dp"
+        android:layout_toRightOf="@+id/btnMainToRecord"
+        android:text="ListViewDisplay" />
+
 </RelativeLayout>

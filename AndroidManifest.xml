@@ -33,7 +33,8 @@
             android:name="shiyaoyu.me.soundtoheartratemonitor.FullFHRActivity">
             </activity>    
          <activity
-             android:name="shiyaoyu.me.soundtoheartratemonitor.ListViewActivity">
+             android:name="shiyaoyu.me.soundtoheartratemonitor.ListViewActivity"
+              android:configChanges="orientation|keyboardHidden|screenSize">
          </activity>
                  
       </application>

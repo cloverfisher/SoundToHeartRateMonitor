@@ -24,6 +24,18 @@ public class MainActivity extends Activity {
 				startActivity(intent );
 			}
 		});
+		
+		
+		Button mainToListViewButton = (Button)findViewById(R.id.buttonListView);
+		mainToListViewButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, ListViewActivity.class);
+				startActivity(intent);
+				
+			}
+		});
 
 	}
 
@@ -33,5 +45,7 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	
 
 }

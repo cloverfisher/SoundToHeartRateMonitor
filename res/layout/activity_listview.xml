@@ -3,10 +3,30 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/buttonListRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Record" />
+
+        <TextView
+            android:id="@+id/tvbeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0" />
+
+    </LinearLayout>
+    
     <ListView
         android:id="@+id/listviewplot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="447dp" >
     </ListView>
+
+
 
 </LinearLayout>

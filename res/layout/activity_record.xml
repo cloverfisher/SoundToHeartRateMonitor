@@ -10,6 +10,7 @@
         android:layout_weight="1" >
 
         <LinearLayout
+            android:id="@+id/plotLinearlayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
@@ -45,13 +46,13 @@
                 android:layout_weight="1" >
 
                 <LinearLayout
-                    android:id="@+id/scrolllayout"
+                    android:id="@+id/scrolllayout1"
                     android:layout_width="3000dp"
                     android:layout_height="match_parent"
                     android:orientation="horizontal" >
 
                     <com.androidplot.xy.XYPlot
-                        android:id="@+id/xyplot"
+                        android:id="@+id/xyplot1"
                         android:layout_width="700dp"
                         android:layout_height="300dp"
                         android:layout_weight="1" />
@@ -59,7 +60,47 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
 
+                <LinearLayout
+                    android:id="@+id/scrolllayout2"
+                    android:layout_width="3000dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <com.androidplot.xy.XYPlot
+                        android:id="@+id/xyplot2"
+                        android:layout_width="700dp"
+                        android:layout_height="300dp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+            
+                        <HorizontalScrollView
+                android:id="@+id/horizontalScrollView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+
+                <LinearLayout
+                    android:id="@+id/scrolllayout3"
+                    android:layout_width="3000dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <com.androidplot.xy.XYPlot
+                        android:id="@+id/xyplot3"
+                        android:layout_width="700dp"
+                        android:layout_height="300dp"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
         </LinearLayout>
     </ScrollView>

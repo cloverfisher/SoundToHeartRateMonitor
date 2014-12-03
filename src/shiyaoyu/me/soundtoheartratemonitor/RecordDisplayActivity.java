@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,8 +62,8 @@ public class RecordDisplayActivity extends Activity{
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
 	
-	private static final int HISTORY_SIZE= 2100;
-	
+	private static final int HISTORY_SIZE= 700;
+	private static final int NUM_PLOT = 3;
 	Button recordButton = null;
 	Button exportButton = null;
 	Button listFHRButton = null;
@@ -74,14 +75,14 @@ public class RecordDisplayActivity extends Activity{
 	boolean mStartRecording = true;
 	private RecordThread recordThread = null;
 	int beats = 0;
-	int threshold = 3000;
+	int threshold = 2000;
 	boolean thresholdflag = false;
     File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FHR.pcm");
     
-    private XYPlot fhrPlot = null; 
-    private SimpleXYSeries fhrSeries = null;
+//    private XYPlot fhrPlot = null; 
+//    private SimpleXYSeries fhrSeries = null;
     Redrawer redrawer;
-    
+    LinearLayout mylayout;
     LinearLayout scrollLayout;
 
 	
@@ -93,7 +94,9 @@ public class RecordDisplayActivity extends Activity{
 	ArrayList bpmList = new ArrayList<Integer>();
 	//double bpmarr[];
 	
-
+	private XYPlot myxyplot[];
+	private SimpleXYSeries myseries[];
+	private ScrollView myScrollView[];
 	
 	class RecordButton extends Button{
 
@@ -102,7 +105,6 @@ public class RecordDisplayActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
                 onRecord(mStartRecording);
                 if (mStartRecording) {
                     setText("Stop recording");
@@ -186,18 +188,21 @@ public class RecordDisplayActivity extends Activity{
 					        	Log.e(LOG_TAG, "time:" + time/1000);
 					            timeList.add(time/1000);
 					            bpmList.add(bpm);
-					            fhrSeries.addLast(time/1000, bpm);	
-					            offset=(int)(rate*time/1000-offset);
-					            fhrPlot.scrollBy(offset, 0);
+					      //      fhrSeries.addLast(time/1000, bpm);	
+					            if(time/1000<=HISTORY_SIZE)
+					            {
+					            	myseries[0].addLast(time/1000, bpm);
+					            }
+					            else if (time/1000<=2*HISTORY_SIZE &&time/1000>=HISTORY_SIZE) {
+					            	myseries[1].addLast(time/1000, bpm);
+								}
+					            else {
+					            	myseries[2].addLast(time/1000, bpm);
+								}
+//					            offset=(int)(rate*time/1000-offset);
+//					            fhrPlot.scrollBy(offset, 0);
 							}
-							//if score !!
-//							double k = fhrSeries.getX(fhrSeries.size()-1).intValue()*rate-width-offset;
-//				            if(k>0){
-//				            	sv.scrollBy((int) (k+10), 0);	
-//				            
-//				            	offset+=(k+10);
-//				            	fhrPlot.scrollBy(offset, 0);
-//				            }
+
 							
 							
 						}
@@ -223,11 +228,9 @@ public class RecordDisplayActivity extends Activity{
 		isRecord = true;
 		int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 		startTime = System.currentTimeMillis();
-	    //forbid the system lock 
-	//	getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); setContentView(R.layout.activity_record);   
-	      // Delete any previous recording.
 	    if (file.exists())
 	       file.delete();
+	    
 	    try {
 	       file.createNewFile();}
 	    catch (IOException e) {
@@ -260,8 +263,11 @@ public class RecordDisplayActivity extends Activity{
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case 1:
+			{
+				
 				beatsTextView.setText("" + beats);
 				break;
+			}
 			default:
 				break;
 			}
@@ -330,14 +336,18 @@ public class RecordDisplayActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	 	   width = getWindowManager().getDefaultDisplay().getWidth();
-	 	   height = getWindowManager().getDefaultDisplay().getHeight();
-	 	   offset = 0;	
+	 	width = getWindowManager().getDefaultDisplay().getWidth();
+	 	height = getWindowManager().getDefaultDisplay().getHeight();
+	 	offset = 0;
+	 	myxyplot = new XYPlot[3];
+	 	myseries = new SimpleXYSeries[3];
+	 	myScrollView = new ScrollView[3]; 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 
-		
 		
 		setContentView(R.layout.activity_record);	
 		sv = (ScrollView)findViewById(R.id.scrollView1);
+		mylayout = (LinearLayout)findViewById(R.id.plotLinearlayout);
+
 
 		
 		beatsTextView = (TextView)findViewById(R.id.beattext);
@@ -362,25 +372,7 @@ public class RecordDisplayActivity extends Activity{
 				recordFlag = !recordFlag;			
 			}
 		});
-//		fullFHRButton = (Button)findViewById(R.id.btnfullgraph);
-//		fullFHRButton.setEnabled(false);
-//		fullFHRButton.setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//			//	play();
-//				if(timeList.size()>4)
-//				{					
-//				//	Intent intent = new Intent(RecordDisplayActivity.this, ListViewActivity.class);
-//					Intent intent = new Intent(RecordDisplayActivity.this, FullFHRActivity.class);
-//					intent.putExtra("time", timeList);
-//					intent.putExtra("bpm", bpmList);
-//					startActivity(intent);				
-//				}
-//
-//			}
-//		});
-		
+
 		
 		exportButton = (Button)findViewById(R.id.btnexport);
 		exportButton.setEnabled(false);
@@ -391,13 +383,17 @@ public class RecordDisplayActivity extends Activity{
 			//	play();
 				if(timeList.size()>4)
 				{					
-					fhrPlot.setDrawingCacheEnabled(true);
-					int pwidth = fhrPlot.getWidth();
-					int pheight = fhrPlot.getHeight();
-					fhrPlot.measure(pwidth, pheight);
-					Bitmap bmp = Bitmap.createBitmap(fhrPlot.getDrawingCache());
-					fhrPlot.setDrawingCacheEnabled(false);
+					mylayout .setDrawingCacheEnabled(true);
+					int pwidth = mylayout .getWidth();
+					int pheight = mylayout .getHeight();
+					mylayout .measure(pwidth, pheight);
+					
+					Bitmap bmp = Bitmap.createBitmap(mylayout.getDrawingCache());
+					mylayout .setDrawingCacheEnabled(false);
 			        FileOutputStream fos;
+			    	File file2 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png");
+			    	if(file2.exists())
+			    		file2.delete();
 					try {
 					//	File pbgfile = new File("fhrPhoto.png"); 
 						fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png", true);
@@ -411,15 +407,22 @@ public class RecordDisplayActivity extends Activity{
 
 			}
 		});
-		scrollLayout = (LinearLayout)findViewById(R.id.scrolllayout);
+		scrollLayout = (LinearLayout)findViewById(R.id.scrolllayout1);
 		
 		/*plot part*/
-		fhrPlot = (XYPlot)findViewById(R.id.xyplot);
+	//	fhrPlot = (XYPlot)findViewById(R.id.xyplot1);
 		scroll_width = scrollLayout.getWidth();
 		rate = scroll_width/HISTORY_SIZE;
 		Log.e(LOG_TAG, "plotwidth:"+scroll_width+" rate "+ rate);
-		PlotConfigure.plotConfiguration(fhrPlot, 0,0+HISTORY_SIZE);
+	//	PlotConfigure.plotConfiguration(fhrPlot, 0,0+HISTORY_SIZE);
 		
+		myxyplot[0] = (XYPlot)findViewById(R.id.xyplot1);
+		myxyplot[1] = (XYPlot)findViewById(R.id.xyplot2);
+		myxyplot[2] = (XYPlot)findViewById(R.id.xyplot3);
+
+		PlotConfigure.plotConfiguration(myxyplot[0], 0,0+HISTORY_SIZE);
+		PlotConfigure.plotConfiguration(myxyplot[1], HISTORY_SIZE,2*HISTORY_SIZE);	
+		PlotConfigure.plotConfiguration(myxyplot[2], 2*HISTORY_SIZE,3*HISTORY_SIZE);		
 //		fhrPlot.scrollBy(-width+100, 0);
 	    addNewPlot();		
 	}
@@ -435,9 +438,7 @@ public class RecordDisplayActivity extends Activity{
  	   offset = 0;
  	   Log.e(LOG_TAG, "width=" + width + " height=" + height);
 	      if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
-	           // Nothing need to be done here
-
-	    	   
+	           // Nothing need to be done here   	   
 	        } else {
 	           // Nothing need to be done here
 	        }
@@ -445,14 +446,22 @@ public class RecordDisplayActivity extends Activity{
 
 	private void addNewPlot()
 	{
-		fhrPlot.clear();
-		fhrSeries = new SimpleXYSeries("FHR");	
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
 		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
-	     
-		fhrPlot.addSeries(fhrSeries,series2Format);  
+		for(int i = 0 ; i < NUM_PLOT; i++)
+		{
+			myxyplot[i].clear();
+			myseries[i] =new SimpleXYSeries("FHR"+i);	
+			myxyplot[i].addSeries(myseries[i], series2Format);
+		}
+//		
+//		fhrPlot.clear();
+//		fhrSeries = new SimpleXYSeries("FHR");	
+//	
+//	     
+//		fhrPlot.addSeries(fhrSeries,series2Format);  
 	    redrawer = new Redrawer(
-                Arrays.asList(new Plot[]{fhrPlot}),
+                Arrays.asList(new Plot[]{myxyplot[0],myxyplot[1],myxyplot[2]}),
                 100, false);
 	}
 

@@ -24,21 +24,31 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000e;
-        public static final int beattext=0x7f080002;
-        public static final int btnMainToRecord=0x7f080003;
-        public static final int btnRecord=0x7f080005;
-        public static final int btnexport=0x7f080006;
-        public static final int end_bt=0x7f08000c;
+        public static final int action_settings=0x7f080018;
+        public static final int beattext=0x7f080004;
+        public static final int btnMainToRecord=0x7f080005;
+        public static final int btnRecord=0x7f080009;
+        public static final int btnexport=0x7f08000a;
+        public static final int buttonListRecord=0x7f080001;
+        public static final int buttonListView=0x7f080006;
+        public static final int end_bt=0x7f080016;
         public static final int fullplot=0x7f080000;
-        public static final int horizontalScrollView1=0x7f080007;
-        public static final int listplotitem=0x7f08000a;
-        public static final int listviewplot=0x7f080001;
-        public static final int play_bt=0x7f08000d;
-        public static final int scrollView1=0x7f080004;
-        public static final int scrolllayout=0x7f080008;
-        public static final int start_bt=0x7f08000b;
-        public static final int xyplot=0x7f080009;
+        public static final int horizontalScrollView1=0x7f08000b;
+        public static final int horizontalScrollView2=0x7f08000e;
+        public static final int horizontalScrollView3=0x7f080011;
+        public static final int listplotitem=0x7f080014;
+        public static final int listviewplot=0x7f080003;
+        public static final int play_bt=0x7f080017;
+        public static final int plotLinearlayout=0x7f080008;
+        public static final int scrollView1=0x7f080007;
+        public static final int scrolllayout1=0x7f08000c;
+        public static final int scrolllayout2=0x7f08000f;
+        public static final int scrolllayout3=0x7f080012;
+        public static final int start_bt=0x7f080015;
+        public static final int tvbeat=0x7f080002;
+        public static final int xyplot1=0x7f08000d;
+        public static final int xyplot2=0x7f080010;
+        public static final int xyplot3=0x7f080013;
     }
     public static final class layout {
         public static final int activity_fullfhr=0x7f030000;
