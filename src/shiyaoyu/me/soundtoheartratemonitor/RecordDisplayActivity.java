@@ -19,7 +19,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -29,7 +31,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -62,7 +63,7 @@ public class RecordDisplayActivity extends Activity{
 	private static final String LOG_TAG = "ysy_AudioDisplayActivity";
 	private static final int SAMPLE_RATE_IN_HZ = 11025;
 	
-	private static final int HISTORY_SIZE= 700;
+	private static final int HISTORY_SIZE= 420;
 	private static final int NUM_PLOT = 3;
 	Button recordButton = null;
 	Button exportButton = null;
@@ -75,7 +76,7 @@ public class RecordDisplayActivity extends Activity{
 	boolean mStartRecording = true;
 	private RecordThread recordThread = null;
 	int beats = 0;
-	int threshold = 2000;
+	int threshold = 1000;
 	boolean thresholdflag = false;
     File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FHR.pcm");
     
@@ -347,6 +348,7 @@ public class RecordDisplayActivity extends Activity{
 		setContentView(R.layout.activity_record);	
 		sv = (ScrollView)findViewById(R.id.scrollView1);
 		mylayout = (LinearLayout)findViewById(R.id.plotLinearlayout);
+		scrollLayout = (LinearLayout)findViewById(R.id.scrolllayout1);
 
 
 		
@@ -383,13 +385,31 @@ public class RecordDisplayActivity extends Activity{
 			//	play();
 				if(timeList.size()>4)
 				{					
-					mylayout .setDrawingCacheEnabled(true);
-					int pwidth = mylayout .getWidth();
-					int pheight = mylayout .getHeight();
-					mylayout .measure(pwidth, pheight);
-					
-					Bitmap bmp = Bitmap.createBitmap(mylayout.getDrawingCache());
-					mylayout .setDrawingCacheEnabled(false);
+					Bitmap bmpplot[]= new Bitmap[3];
+					for(int i = 0; i < 3; i++)
+					{
+						Log.e(LOG_TAG, "asd"+i);
+						myxyplot[i].setDrawingCacheEnabled(true);
+				        int width = myxyplot[i].getWidth();
+				        int height = myxyplot[i].getHeight();
+				        myxyplot[i].measure(width, height);
+				        bmpplot[i] = Bitmap.createBitmap(myxyplot[i].getDrawingCache());
+				        myxyplot[i].setDrawingCacheEnabled(false);
+	
+					}
+			        int width = myxyplot[0].getWidth();
+			        int height =myxyplot[0].getHeight()*3;
+//			        int width = sv.getChildAt(0).getWidth();
+//			        int height =sv.getChildAt(0).getHeight();
+			        Bitmap btm = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888);
+			        Canvas canvas = new Canvas(btm);
+			        canvas.drawBitmap(bmpplot[0], 0,0, null);
+			        canvas.drawBitmap(bmpplot[1], 0, bmpplot[0].getHeight(), null);
+			        canvas.drawBitmap(bmpplot[2], 0, bmpplot[0].getHeight()*2, null);
+			        canvas.drawBitmap(btm, 0, 0, null);
+	//		        btm.recycle();
+	//		        Bitmap btm = Bitmap.createBitmap(mylayout.getDrawingCache());
+
 			        FileOutputStream fos;
 			    	File file2 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png");
 			    	if(file2.exists())
@@ -397,7 +417,12 @@ public class RecordDisplayActivity extends Activity{
 					try {
 					//	File pbgfile = new File("fhrPhoto.png"); 
 						fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png", true);
-				        bmp.compress(CompressFormat.PNG, 100, fos);
+//						bmpplot[0].compress(CompressFormat.PNG, 100, fos);
+//						bmpplot[1].compress(CompressFormat.PNG, 100, fos);
+//						bmpplot[2].compress(CompressFormat.PNG, 100, fos);
+					
+						btm.compress(CompressFormat.PNG, 100, fos);
+						
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -407,7 +432,6 @@ public class RecordDisplayActivity extends Activity{
 
 			}
 		});
-		scrollLayout = (LinearLayout)findViewById(R.id.scrolllayout1);
 		
 		/*plot part*/
 	//	fhrPlot = (XYPlot)findViewById(R.id.xyplot1);
@@ -427,7 +451,7 @@ public class RecordDisplayActivity extends Activity{
 	    addNewPlot();		
 	}
 	
-	
+
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -448,10 +472,13 @@ public class RecordDisplayActivity extends Activity{
 	{
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
 		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
+		Paint paint = series2Format.getLinePaint();
+		paint.setStrokeWidth(2);
+		series2Format.setLinePaint(paint);
 		for(int i = 0 ; i < NUM_PLOT; i++)
 		{
 			myxyplot[i].clear();
-			myseries[i] =new SimpleXYSeries("FHR"+i);	
+			myseries[i] =new SimpleXYSeries("FHR"+i);
 			myxyplot[i].addSeries(myseries[i], series2Format);
 		}
 //		
