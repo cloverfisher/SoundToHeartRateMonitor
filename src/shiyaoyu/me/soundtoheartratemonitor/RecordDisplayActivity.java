@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -27,6 +28,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -125,6 +127,14 @@ public class RecordDisplayActivity extends Activity{
 		
 	}
 	
+	public void openPicture(String uri)
+	{
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.parse("file://" + uri), "image/*");
+		startActivity(intent);
+	}
+	
 	private void creatAudioRecord()
 	{
 		bufferSizeInByte = AudioRecord.getMinBufferSize( SAMPLE_RATE_IN_HZ,  
@@ -200,8 +210,7 @@ public class RecordDisplayActivity extends Activity{
 					            else {
 					            	myseries[2].addLast(time/1000, bpm);
 								}
-//					            offset=(int)(rate*time/1000-offset);
-//					            fhrPlot.scrollBy(offset, 0);
+
 							}
 
 							
@@ -219,8 +228,6 @@ public class RecordDisplayActivity extends Activity{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-
 		}
 		
 	}
@@ -399,17 +406,13 @@ public class RecordDisplayActivity extends Activity{
 					}
 			        int width = myxyplot[0].getWidth();
 			        int height =myxyplot[0].getHeight()*3;
-//			        int width = sv.getChildAt(0).getWidth();
-//			        int height =sv.getChildAt(0).getHeight();
+
 			        Bitmap btm = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888);
 			        Canvas canvas = new Canvas(btm);
 			        canvas.drawBitmap(bmpplot[0], 0,0, null);
 			        canvas.drawBitmap(bmpplot[1], 0, bmpplot[0].getHeight(), null);
 			        canvas.drawBitmap(bmpplot[2], 0, bmpplot[0].getHeight()*2, null);
 			        canvas.drawBitmap(btm, 0, 0, null);
-	//		        btm.recycle();
-	//		        Bitmap btm = Bitmap.createBitmap(mylayout.getDrawingCache());
-
 			        FileOutputStream fos;
 			    	File file2 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png");
 			    	if(file2.exists())
@@ -417,12 +420,8 @@ public class RecordDisplayActivity extends Activity{
 					try {
 					//	File pbgfile = new File("fhrPhoto.png"); 
 						fos = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png", true);
-//						bmpplot[0].compress(CompressFormat.PNG, 100, fos);
-//						bmpplot[1].compress(CompressFormat.PNG, 100, fos);
-//						bmpplot[2].compress(CompressFormat.PNG, 100, fos);
-					
 						btm.compress(CompressFormat.PNG, 100, fos);
-						
+						openPicture(Environment.getExternalStorageDirectory().getAbsolutePath() + "/fhrPhoto.png");
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -473,7 +472,7 @@ public class RecordDisplayActivity extends Activity{
 		LineAndPointFormatter series2Format = new LineAndPointFormatter();
 		series2Format = new LineAndPointFormatter(Color.rgb(0, 0, 0), null, null,null);
 		Paint paint = series2Format.getLinePaint();
-		paint.setStrokeWidth(2);
+		paint.setStrokeWidth(1);
 		series2Format.setLinePaint(paint);
 		for(int i = 0 ; i < NUM_PLOT; i++)
 		{
@@ -481,12 +480,6 @@ public class RecordDisplayActivity extends Activity{
 			myseries[i] =new SimpleXYSeries("FHR"+i);
 			myxyplot[i].addSeries(myseries[i], series2Format);
 		}
-//		
-//		fhrPlot.clear();
-//		fhrSeries = new SimpleXYSeries("FHR");	
-//	
-//	     
-//		fhrPlot.addSeries(fhrSeries,series2Format);  
 	    redrawer = new Redrawer(
                 Arrays.asList(new Plot[]{myxyplot[0],myxyplot[1],myxyplot[2]}),
                 100, false);
