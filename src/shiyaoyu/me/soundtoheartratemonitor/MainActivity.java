@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		mainToListViewButton.setEnabled(false);
+		mainToListViewButton.setVisibility(4);
 
 	}
 

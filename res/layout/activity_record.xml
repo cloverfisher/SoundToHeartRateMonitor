@@ -2,10 +2,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="5" >
+            android:layout_weight="7" >
 
             <Button
                 android:id="@+id/btnRecord"
@@ -13,17 +14,24 @@
                 android:layout_height="wrap_content"
                 android:text="RecordButton" />
 
+            <TextView
+                android:id="@+id/beattext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="beat" />
+
             <Button
                 android:id="@+id/btnexport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="export" />
 
-            <TextView
-                android:id="@+id/beattext"
+            <Button
+                android:id="@+id/btnshare"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="beat" />
+                android:text="Share" />
+
         </LinearLayout>
     <ScrollView
         android:id="@+id/scrollView1"
